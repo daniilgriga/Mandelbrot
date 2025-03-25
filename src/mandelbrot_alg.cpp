@@ -28,7 +28,7 @@ int MandelbrotAlgorithm (float x_0, float y_0)
     return N;
 }
 
-void RunMandelbrot (sf::Image& image)
+void RunMandelbrot (sf::Image* image)
 {
     float xc = 0.f, yc = 0.f, scale = 1.f;
 
@@ -53,7 +53,7 @@ void RunMandelbrot (sf::Image& image)
                 color = sf::Color (color.r, color.g, color.b);
             }
 
-            image.setPixel (ix, iy, color);
+            image->setPixel (ix, iy, color);
 
         }
     }

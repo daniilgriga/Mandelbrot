@@ -10,7 +10,7 @@ int main (int argc, const char* argv[])
     sf::Image image;
     image.create (800, 800, sf::Color::Black);
 
-    RunMandelbrot (image);
+    RunMandelbrot (&image);
 
     sf::Texture texture;
     texture.loadFromImage (image);
