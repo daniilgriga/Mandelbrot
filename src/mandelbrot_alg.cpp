@@ -28,7 +28,7 @@ int MandelbrotAlgorithm (float x_0, float y_0)
     return N;
 }
 
-void RunMandelbrot (sf::Image* image)
+void RunMandelbrot (sf::Image* image, bool GraphicsFlag)
 {
     float xc = 0.f, yc = 0.f, scale = 1.f;
 
@@ -41,20 +41,22 @@ void RunMandelbrot (sf::Image* image)
         {
             int N = MandelbrotAlgorithm (x_0, y_0);
 
-            sf::Color color;
-            color = sf::Color::Black;
-
-            if (N != N_max)
+            if (GraphicsFlag)
             {
-                color.r = (sf::Uint8) ((N * 255) / N_max);
-                color.g = (sf::Uint8) ((N * 128) / N_max);
-                color.b = (sf::Uint8) (255 - (N * 255) / N_max);
+                sf::Color color;
+                color = sf::Color::Black;
 
-                color = sf::Color (color.r, color.g, color.b);
+                if (N != N_max)
+                {
+                    color.r = (sf::Uint8) ((N * 255) / N_max);
+                    color.g = (sf::Uint8) ((N * 128) / N_max);
+                    color.b = (sf::Uint8) (255 - (N * 255) / N_max);
+
+                    color = sf::Color (color.r, color.g, color.b);
+                }
+
+                image->setPixel (ix, iy, color);
             }
-
-            image->setPixel (ix, iy, color);
-
         }
     }
 }

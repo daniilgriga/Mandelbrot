@@ -40,7 +40,22 @@ build/%.o: src/%.cpp
 	@$(CC) -I./include $(CFLAGS) -MMD -MP $< -o $@
 
 run:
-	@./$(EXECUTABLE)
+	@./$(EXECUTABLE) --run=1
+
+run10:
+	@./$(EXECUTABLE) --run=10
+
+run20:
+	@./$(EXECUTABLE) --run=20
+
+run50:
+	@./$(EXECUTABLE) --run=50
+
+run100:
+	@./$(EXECUTABLE) --run=100
+
+graph:
+	@./$(EXECUTABLE) --graphics
 
 clean:
 	rm -f build/*.o $(EXECUTABLE)

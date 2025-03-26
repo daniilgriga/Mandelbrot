@@ -10,8 +10,8 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
 
 ## htop
 
-**htop** is a terminal-based system-monitoring tool for Linux, similar to top but with a more user-friendly, colorful interface. It displays CPU, memory, and swap usage, along with a detailed list of running processes, including their PID, user, CPU%, and memory usage. You can sort, filter, and manage processes (e.g., kill them) using keyboard shortcuts. 
+**htop** is a terminal-based system-monitoring tool for Linux, similar to top but with a more user-friendly, colorful interface. It displays CPU, memory, and swap usage, along with a detailed list of running processes, including their PID, user, CPU%, and memory usage. You can sort, filter, and manage processes (e.g., kill them) using keyboard shortcuts.
 
 In **htop** I looked at all the information about my system.
-> [!NOTE]  
+> [!NOTE]
 > I use **Ubuntu 24.04.2 LTS** and have **AMD Ryzen 5, 4000 series**

@@ -12,6 +12,6 @@ const float ROI_Y = 0;
 
 int MandelbrotAlgorithm (float x_0, float y_0);
 
-void RunMandelbrot (sf::Image* image);
+void RunMandelbrot (sf::Image* image, bool GraphicsFlag);
 
 #endif // MANDELBROT_H
