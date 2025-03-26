@@ -14,4 +14,4 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
 
 In **htop** I looked at all the information about my system.
 > [!NOTE]  
-> I use Ubuntu 24.04.2 LTS and have AMD Ryzen 5, 4000 series
+> I use **Ubuntu 24.04.2 LTS** and have **AMD Ryzen 5, 4000 series**
