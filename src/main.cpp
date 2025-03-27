@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "mandelbrot_alg.hpp"
+#include "graphics.hpp"
 
 static struct option long_options[] =
 {
@@ -14,6 +15,8 @@ static struct option long_options[] =
 
 int main (int argc, char* argv[]) // REVIEW
 {
+    struct Init_t cond = { 0.f, 0.f, 1.f }; // params
+
     bool useGraphics = false;
     int iterations = 0;
     int option = 0;
@@ -27,7 +30,7 @@ int main (int argc, char* argv[]) // REVIEW
                 break;
 
             case 'r':
-                iterations = atoi (optarg);
+                iterations = atoi (optarg); // FIXME - not atoi -> scanf
                 if (iterations == 0)
                 {
                     fprintf (stderr, "Error: Wrong syntax >>> usage: %s [-r|--run]=<number>\n", argv[0]);
@@ -45,11 +48,17 @@ int main (int argc, char* argv[]) // REVIEW
     }
 
     if (useGraphics)
-        GraphicsPart ();       // if i add keyboard handler -> needs a error handler
+    {
+        GraphicsPart (&cond);       // if i add keyboard handler -> needs a error handler
+    }
     else
     {
+        float fullTime = 0;
+
         for (int i = 0; i < iterations; i++)
-            RunMandelbrot (nullptr, false);
+            fullTime += RunMandelbrot (nullptr, &cond, false);
+
+        fprintf (stderr, "Mandelbrot algorithm <%d> times took: <%g> seconds!\n", iterations, fullTime);
     }
 
     return 0;

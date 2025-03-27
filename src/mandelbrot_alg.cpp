@@ -28,16 +28,16 @@ int MandelbrotAlgorithm (float x_0, float y_0)
     return N;
 }
 
-void RunMandelbrot (sf::Image* image, bool GraphicsFlag)
+float RunMandelbrot (sf::Image* image, struct Init_t* cond, bool GraphicsFlag)
 {
-    float xc = 0.f, yc = 0.f, scale = 1.f;
+    sf::Clock clock; // TODO
 
     for (unsigned int iy = 0; iy < 800; iy++)
     {
-        float x_0 = ( (          - 400.f) * dx + ROI_X + xc ) * scale;
-        float y_0 = ( ((float)iy - 400.f) * dy + ROI_Y + yc ) * scale;
+        float x_0 = ( (          - 400.f) * cond->dx + ROI_X + cond->xc ) * cond->scale;
+        float y_0 = ( ((float)iy - 400.f) * cond->dy + ROI_Y + cond->yc ) * cond->scale;
 
-        for (unsigned int ix = 0; ix < 800; ix++, x_0 += dx)
+        for (unsigned int ix = 0; ix < 800; ix++, x_0 += cond->dx)
         {
             int N = MandelbrotAlgorithm (x_0, y_0);
 
@@ -60,35 +60,6 @@ void RunMandelbrot (sf::Image* image, bool GraphicsFlag)
             }
         }
     }
-}
 
-int GraphicsPart (void)
-{
-    sf::RenderWindow window (sf::VideoMode (800, 800), "Mandelbrot");
-
-    sf::Image image;
-    image.create (800, 800, sf::Color::Black);
-
-    RunMandelbrot (&image, true);
-
-    sf::Texture texture;
-    texture.loadFromImage (image);
-
-    sf::Sprite sprite (texture);
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent (event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close ();
-        }
-
-        window.clear ();
-        window.draw (sprite);
-        window.display ();
-    }
-
-    return 0;
+    return clock.getElapsedTime().asSeconds();
 }
