@@ -48,15 +48,47 @@ void RunMandelbrot (sf::Image* image, bool GraphicsFlag)
 
                 if (N != N_max)
                 {
-                    color.r = (sf::Uint8) ((N * 255) / N_max);
-                    color.g = (sf::Uint8) ((N * 128) / N_max);
-                    color.b = (sf::Uint8) (255 - (N * 255) / N_max);
-
-                    color = sf::Color (color.r, color.g, color.b);
+                    if (N % 2 == 1)
+                        color = sf::Color::Blue;
+                    else
+                        color = sf::Color::Black;
+                    if (N > 75)
+                        color = sf::Color::White;
                 }
 
                 image->setPixel (ix, iy, color);
             }
         }
     }
+}
+
+int GraphicsPart (void)
+{
+    sf::RenderWindow window (sf::VideoMode (800, 800), "Mandelbrot");
+
+    sf::Image image;
+    image.create (800, 800, sf::Color::Black);
+
+    RunMandelbrot (&image, true);
+
+    sf::Texture texture;
+    texture.loadFromImage (image);
+
+    sf::Sprite sprite (texture);
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent (event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close ();
+        }
+
+        window.clear ();
+        window.draw (sprite);
+        window.display ();
+    }
+
+    return 0;
 }

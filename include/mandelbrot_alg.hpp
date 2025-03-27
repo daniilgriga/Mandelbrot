@@ -14,4 +14,6 @@ int MandelbrotAlgorithm (float x_0, float y_0);
 
 void RunMandelbrot (sf::Image* image, bool GraphicsFlag);
 
+int GraphicsPart (void);
+
 #endif // MANDELBROT_H
