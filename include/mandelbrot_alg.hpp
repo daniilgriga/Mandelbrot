@@ -7,8 +7,9 @@ struct Init_t
           yc = 0.f,
        scale = 1.f;
 
-    const float dx = 1.0f/800;
-    const float dy = 1.0f/800;
+    const float dx = 1.0f/400;
+    const float dy = 1.0f/400;
+    const float ds = 1.2f;
 };
 
 const int   N_max = 256;

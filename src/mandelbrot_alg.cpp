@@ -34,10 +34,10 @@ float RunMandelbrot (sf::Image* image, struct Init_t* cond, bool GraphicsFlag)
 
     for (unsigned int iy = 0; iy < 800; iy++)
     {
-        float x_0 = ( (          - 400.f) * cond->dx + ROI_X + cond->xc ) * cond->scale;
-        float y_0 = ( ((float)iy - 400.f) * cond->dy + ROI_Y + cond->yc ) * cond->scale;
+        float x_0 =  (                      - 400.f*cond->scale/2) * cond->dx + cond->xc;
+        float y_0 =  ((float)iy*cond->scale - 400.f*cond->scale/2) * cond->dy + cond->yc;
 
-        for (unsigned int ix = 0; ix < 800; ix++, x_0 += cond->dx)
+        for (unsigned int ix = 0; ix < 800; ix++, x_0 += cond->dx*cond->scale)
         {
             int N = MandelbrotAlgorithm (x_0, y_0);
 

@@ -55,22 +55,22 @@ int GraphicsPart (struct Init_t* cond)
             window.close();
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-            cond->xc += cond->dx * 100.f;
+            cond->xc += cond->dx * cond->scale;
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-            cond->xc -= cond->dx * 100.f;
+            cond->xc -= cond->dx * cond->scale;
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-            cond->yc += cond->dy * 100.f;
+            cond->yc += cond->dy * cond->scale;
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-            cond->yc -= cond->dy * 100.f;
+            cond->yc -= cond->dy * cond->scale;
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z)
-            cond->scale -= cond->dx * 100.f;
+            cond->scale /= cond->ds;
 
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::A)
-            cond->scale -= cond->dx * 100.f;
+            cond->scale *= cond->ds;
 
         fprintf (stderr, "xc = %f yc = %f scale = %f\n", cond->xc, cond->yc, cond->scale);
 
