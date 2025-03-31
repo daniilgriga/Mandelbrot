@@ -1,12 +1,14 @@
 #include <stdio.h>
+#include <time.h>
 #include <SFML/Graphics.hpp>
 
 #include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
-float RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
+double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
-    sf::Clock clock; // TODO
+    struct timespec start, end;
+    clock_gettime (CLOCK_MONOTONIC, &start);
 
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
@@ -55,5 +57,8 @@ float RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFl
         }
     }
 
-    return clock.getElapsedTime().asSeconds();
+    clock_gettime (CLOCK_MONOTONIC, &end);
+
+    return (double) (end.tv_sec  - start.tv_sec) +
+           (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
 }

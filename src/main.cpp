@@ -13,7 +13,7 @@ static struct option long_options[] =
     {  nullptr ,         0        , nullptr,  0 }
 };
 
-int main (int argc, char* argv[]) // REVIEW
+int main (int argc, char* argv[])
 {
     struct Params_t startParams = { ROI_X, 0.f, 1.f };
 
@@ -59,7 +59,7 @@ int main (int argc, char* argv[]) // REVIEW
     }
     else
     {
-        float fullTime = 0;
+        double fullTime = 0;
 
         for (int i = 0; i < iterations; i++)
             fullTime += RunMandelbrot_v1 (nullptr, &startParams, false);
