@@ -1,45 +1,39 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
 
+#include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
-int MandelbrotAlgorithm (float x_0, float y_0)
-{
-    float x = x_0;
-    float y = y_0;
-
-    int N = 0;
-
-    for ( ; N < N_max; N++)
-    {
-        float x_2 = x * x;
-        float y_2 = y * y;
-        float x_y = x * y;
-
-        float r_2 = x_2 + y_2;
-
-        if (r_2 >= r_2_max)
-            break;
-
-        x = x_2 - y_2 + x_0;
-        y = x_y + x_y + y_0;
-    }
-
-    return N;
-}
-
-float RunMandelbrot (sf::Image* image, struct Init_t* cond, bool GraphicsFlag)
+float RunMandelbrot (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
     sf::Clock clock; // TODO
 
-    for (unsigned int iy = 0; iy < 800; iy++)
+    for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
-        float x_0 =  (                      - 400.f*cond->scale/2) * cond->dx + cond->xc;
-        float y_0 =  ((float)iy*cond->scale - 400.f*cond->scale/2) * cond->dy + cond->yc;
+        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc + ROI_X;
+        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc + ROI_Y;
 
-        for (unsigned int ix = 0; ix < 800; ix++, x_0 += cond->dx*cond->scale)
+        for (unsigned int ix = 0; ix < SIZE_X; ix++, x_0 += cond->dx*cond->scale)
         {
-            int N = MandelbrotAlgorithm (x_0, y_0);
+            float x = x_0;
+            float y = y_0;
+
+            int N = 0;
+
+            for ( ; N < N_max; N++)
+            {
+                float x_2 = x * x;
+                float y_2 = y * y;
+                float x_y = x * y;
+
+                float r_2 = x_2 + y_2;
+
+                if (r_2 >= r_2_max)
+                    break;
+
+                x = x_2 - y_2 + x_0;
+                y = x_y + x_y + y_0;
+            }
 
             if (GraphicsFlag)
             {

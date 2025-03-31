@@ -2,10 +2,10 @@
 #include "mandelbrot_alg.hpp"
 #include <graphics.hpp>
 
-int GraphicsPart (struct Init_t* cond)
+int GraphicsPart (struct Params_t* cond)
 {
 // =================== main Window =================== //
-    sf::RenderWindow    window (sf::VideoMode (800, 800), "Mandelbrot");
+    sf::RenderWindow    window (sf::VideoMode (SIZE_X, SIZE_Y), "Mandelbrot");
     sf::Image image;
     sf::Texture texture;
 // =================================================== //
@@ -35,7 +35,7 @@ int GraphicsPart (struct Init_t* cond)
 
     while (window.isOpen())
     {
-        image.create (800, 800, sf::Color::Black);
+        image.create (SIZE_X, SIZE_Y, sf::Color::Black);
 
         sf::Clock clock;
 
