@@ -10,9 +10,6 @@ int GraphicsPart (struct Params_t* cond)
     sf::Texture texture;
 // =================================================== //
 
-// =================== FPS Window ==================== //
-    sf::RenderWindow fpsWindow (sf::VideoMode (200,  100), "FPS");
-
     sf::Font font;
     if (!font.loadFromFile ("build/arial_b.ttf"))
     {
@@ -20,26 +17,34 @@ int GraphicsPart (struct Params_t* cond)
         return 1;
     }
 
+    sf::RectangleShape fpsField (sf::Vector2f (100.f, 50.f));
+    fpsField.setPosition (4, 746);
+    fpsField.setFillColor (sf::Color::Black);
+    fpsField.setOutlineThickness (2);
+    fpsField.setOutlineColor (sf::Color::White);
+
     sf::Text fpsText;
     fpsText.setFont (font);
     fpsText.setCharacterSize (24);
     fpsText.setFillColor (sf::Color::White);
-    fpsText.setPosition (10, 10);
+    fpsText.setPosition ( fpsField.getPosition ().x + 10,
+                          fpsField.getPosition ().y + (fpsField.getSize ().y - fpsText.getGlobalBounds ().height) / 2 - 12);
 
-    float fps = 0;
-    const int frameCount = 100;
-    float frameTimes[frameCount] = {};
-    int frameIndex = 0;
-    int filledFrames = 0;
-    char result[15] = {};
+    sf::Clock clock;
+    float lastTime = clock.getElapsedTime().asSeconds();
+
+    float totalTime = 0.0f;
+    int frameCount = 0;
+    float averageFps = 0.0f;
+    char resultFps[15] = {};
+
+    sf::Clock restartClock;
 
     while (window.isOpen())
     {
         image.create (SIZE_X, SIZE_Y, sf::Color::Black);
 
-        sf::Clock clock;
-
-        RunMandelbrot (&image, cond, true);
+        RunMandelbrot_v1 (&image, cond, true);
         texture.loadFromImage (image);
 
         sf::Sprite sprite (texture);
@@ -72,38 +77,38 @@ int GraphicsPart (struct Params_t* cond)
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::A)
             cond->scale *= cond->ds;
 
-        fprintf (stderr, "xc = %f yc = %f scale = %f\n", cond->xc, cond->yc, cond->scale);
+        fprintf (stderr, "xc = %.5f yc = %.5f scale = %.5f\n", cond->xc, cond->yc, cond->scale);
 
-// ============================ FPS ============================= // // FIXME
-        float currentTime = clock.restart().asSeconds(); // REVIEW
+// ============================ FPS ============================= //
+        //float currentTime = clock.restart().asSeconds(); // REVIEW
 
-        frameTimes[frameIndex] = currentTime;
-        frameIndex = (frameIndex + 1) % frameCount;
+        float currentTime = clock.getElapsedTime().asSeconds();
 
-        if (filledFrames < frameCount)
-            filledFrames++;
+        float deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
-        float totalTime = 0.f;
-        for (int i = 0; i < filledFrames; i++)
-            totalTime += frameTimes[i];
+        totalTime += deltaTime;
+        frameCount++;
 
-        float averageTime = totalTime / (float)filledFrames;
+        if (totalTime > 0.0f)
+            averageFps = (float) frameCount / totalTime;
 
-        if (averageTime > 0)
-            fps = 1.f / averageTime;
-        else
-            fps = 0;
+        snprintf (resultFps, sizeof (resultFps), "FPS: %.f", averageFps);
 
-        snprintf (result, sizeof (result), "FPS: %.f", fps);
-        fpsText.setString (result);
+        fpsText.setString (resultFps);
 
-        fpsWindow.clear (sf::Color::Black);
-        fpsWindow.draw (fpsText);
-        fpsWindow.display ();
+        if (restartClock.getElapsedTime().asSeconds() >= 1.0f)
+        {
+            totalTime = 0.0f;
+            frameCount = 0;
+            restartClock.restart();
+        }
 // ============================================================== //
 
         window.clear();
         window.draw (sprite);
+        window.draw (fpsField);
+        window.draw (fpsText);
         window.display();
     }
 

@@ -4,14 +4,14 @@
 #include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
-float RunMandelbrot (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
+float RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
     sf::Clock clock; // TODO
 
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
-        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc + ROI_X;
-        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc + ROI_Y;
+        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
+        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
 
         for (unsigned int ix = 0; ix < SIZE_X; ix++, x_0 += cond->dx*cond->scale)
         {
