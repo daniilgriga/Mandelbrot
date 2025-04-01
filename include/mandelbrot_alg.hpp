@@ -20,4 +20,6 @@ const float ROI_Y = 0;
 
 double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag);
 
+double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag);
+
 #endif // MANDELBROT_H
