@@ -70,15 +70,20 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
     struct timespec start, end;
     clock_gettime (CLOCK_MONOTONIC, &start);
 
+    float x_0_array[SIZE_ARR] = {};
+    float x[SIZE_ARR] = {};
+    float y[SIZE_ARR] = {};
+
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
         float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
         float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
 
-        for (unsigned int ix = 0; ix < SIZE_X; ix++, x_0 += cond->dx*cond->scale)
+        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += cond->dx*cond->scale*SIZE_ARR)
         {
-            float x[SIZE_ARR] = {x_0, x_0 * cond->dx, x_0 * cond->dx * 2, x_0 * cond->dx * 3};
-            float y[SIZE_ARR] = {y_0, y_0 * cond->dy, y_0 * cond->dy * 2, y_0 * cond->dy * 3};
+            for (int i = 0; i < SIZE_ARR; i++) x_0_array[i] = x_0 + cond->dx*((float)i)*cond->scale;
+            for (int i = 0; i < SIZE_ARR; i++) x[i] = x_0_array[i];
+            for (int i = 0; i < SIZE_ARR; i++) y[i] = y_0;
 
             int N[SIZE_ARR] = {};
 
@@ -92,21 +97,21 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 for (int i = 0; i < SIZE_ARR; i++) x_y[i] = x[i] * y[i];
 
                 float r_2[SIZE_ARR] = {};
-                for (int i = 0; i < SIZE_ARR; i++) r_2[i] = x_2[i] * y_2[i];
+                for (int i = 0; i < SIZE_ARR; i++) r_2[i] = x_2[i] + y_2[i];
 
-                int compare[4] = {};
+                int compare[SIZE_ARR] = {};
                 for (int i = 0; i < SIZE_ARR; i++) if (r_2[i] <= r_2_max)
                                                        compare[i] = 1;
 
                 int mask = 0;
-                for (int i = 0; i < SIZE_ARR; i++) mask |= (compare[i] << 1);
+                for (int i = 0; i < SIZE_ARR; i++) mask |= (compare[i] << i);
                 if (!mask)
                     break;
 
                 for (int i = 0; i < SIZE_ARR; i++) N[i] = N[i] + compare[i];
 
-                for (int i = 0; i < SIZE_ARR; i++) x[i] = x_2[i] - y_2[i] + x[i];
-                for (int i = 0; i < SIZE_ARR; i++) y[i] = x_y[i] * 2 + y[i];
+                for (int i = 0; i < SIZE_ARR; i++) x[i] = x_2[i] - y_2[i] + x_0_array[i];
+                for (int i = 0; i < SIZE_ARR; i++) y[i] = x_y[i] * 2 + y_0;
             }
 
             if (GraphicsFlag)
@@ -114,7 +119,7 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 sf::Color color;
                 color = sf::Color::Black;
 
-                for (int i = 0; i < SIZE_ARR; i++)
+                for (unsigned int i = 0; i < SIZE_ARR; i++)
                 {
                     if (N[i] < N_max)
                     {
@@ -124,12 +129,10 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                             color = sf::Color::Black;
                         if (N[i] > 75)
                             color = sf::Color::White;
-
-                        break;
                     }
-                }
 
-                image->setPixel (ix, iy, color);
+                    image->setPixel (ix + i, iy, color);
+                }
             }
         }
     }

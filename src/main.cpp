@@ -62,7 +62,7 @@ int main (int argc, char* argv[])
         double fullTime = 0;
 
         for (int i = 0; i < iterations; i++)
-            fullTime += RunMandelbrot_v1 (nullptr, &startParams, false);
+            fullTime += RunMandelbrot_v2 (nullptr, &startParams, false);
 
         fprintf (stderr, "Mandelbrot algorithm <%d> times took: <%g> seconds!\n", iterations, fullTime);
     }
