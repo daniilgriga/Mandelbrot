@@ -1,6 +1,6 @@
 CC = g++
 
- FLAGS = -D _DEBUG -ggdb3  -O0 -Wall -Wextra  -Waggressive-loop-optimizations \
+ FLAGS =-D _DEBUG -ggdb3 -O3 -Wall -Wextra  -Waggressive-loop-optimizations \
  	   	-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
  		-Wconversion -Wempty-body -Wfloat-equal \
  		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline \
@@ -13,9 +13,6 @@ CC = g++
  		-Wno-varargs -Wstack-protector \
  		-fstack-protector -fstrict-overflow -flto-odr-type-merging -fno-omit-frame-pointer \
  		-pie -fPIE -Werror=vla \
- 		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
- 		integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,$\
- 		returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 CFLAGS = -c $(FLAGS)
 LDFLAGS = $(FLAGS) -lm

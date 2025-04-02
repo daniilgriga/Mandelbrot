@@ -10,6 +10,8 @@ static struct option long_options[] =
 {
     {"graphics",       no_argument, nullptr, 'g'},
     {  "run"   , required_argument, nullptr, 'r'},
+    {  "v1"    , optional_argument, nullptr, 'v'},
+    {  "v2"    , optional_argument, nullptr, 'f'},
     {  nullptr ,         0        , nullptr,  0 }
 };
 
@@ -19,9 +21,10 @@ int main (int argc, char* argv[])
 
     bool useGraphics = false;
     int iterations = 0;
+    int version = 0;
     int option = 0;
 
-    while ((option = getopt_long (argc, argv, "gr:", long_options, nullptr)) != -1)
+    while ((option = getopt_long (argc, argv, "gr:v::f::", long_options, nullptr)) != -1)
     {
         switch (option)
         {
@@ -36,15 +39,27 @@ int main (int argc, char* argv[])
                 int error = sscanf (optarg, "%d", &iterations);
                 if (error == 0)
                 {
-                    fprintf (stderr, "Incorrect form -> usage:\n%s [-r<number>|--run=<number>]\n", argv[0]);
+                    fprintf (stderr, "Incorrect form -> usage:\n%s [-v<number> -r<number> | --v<number> --run=<number>]\n", argv[0]);
                     return 1;
                 }
                 break;
             }
 
+            case 'v':
+            {
+                version = 1;
+                break;
+            }
+
+            case 'f':
+            {
+                version = 2;
+                break;
+            }
+
             case '?':
             {
-                fprintf (stderr, "Usage:\n%s [-g|--graphics]\nor\n%s [-r<number>|--run=<number>]\n", argv[0], argv[0]);
+                fprintf (stderr, "Usage:\n%s [-g|--graphics]\nor\n%s [-v<number> -r<number> | --v<number> --run=<number>]\n", argv[0], argv[0]);
                 return 1;
             }
 
@@ -53,6 +68,7 @@ int main (int argc, char* argv[])
         }
     }
 
+
     if (useGraphics)
     {
         GraphicsPart (&startParams);       // if i add keyboard handler -> needs a error handler
@@ -60,6 +76,32 @@ int main (int argc, char* argv[])
     else
     {
         double fullTime = 0;
+
+        switch (version)
+        {
+            case 1:
+            {
+                fprintf (stderr, "Mandelbrot v1 started >>>\n");
+
+                for (int i = 0; i < iterations; i++)
+                    fullTime += RunMandelbrot_v1 (nullptr, &startParams, false);
+
+                break;
+            }
+
+            case 2:
+            {
+                fprintf (stderr, "Mandelbrot v2 started >>>\n");
+
+                for (int i = 0; i < iterations; i++)
+                    fullTime += RunMandelbrot_v2 (nullptr, &startParams, false);
+
+                break;
+            }
+
+            default:
+                fprintf (stderr, "Version dont choosed - usage: [-v<number> -r<number> | --v<number> --run=<number>]");
+        }
 
         for (int i = 0; i < iterations; i++)
             fullTime += RunMandelbrot_v2 (nullptr, &startParams, false);

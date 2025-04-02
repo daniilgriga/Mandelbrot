@@ -65,6 +65,7 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
            (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
 }
 
+
 double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
     struct timespec start, end;
@@ -100,8 +101,7 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 for (int i = 0; i < SIZE_ARR; i++) r_2[i] = x_2[i] + y_2[i];
 
                 int compare[SIZE_ARR] = {};
-                for (int i = 0; i < SIZE_ARR; i++) if (r_2[i] <= r_2_max)
-                                                       compare[i] = 1;
+                for (int i = 0; i < SIZE_ARR; i++) if (r_2[i] <= r_2_max) compare[i] = 1;
 
                 int mask = 0;
                 for (int i = 0; i < SIZE_ARR; i++) mask |= (compare[i] << i);

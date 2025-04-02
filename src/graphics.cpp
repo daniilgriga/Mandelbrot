@@ -44,7 +44,11 @@ int GraphicsPart (struct Params_t* cond)
     {
         image.create (SIZE_X, SIZE_Y, sf::Color::Black);
 
-        RunMandelbrot_v2 (&image, cond, true);
+        // switch (operation)
+
+        RunMandelbrot_v1 (&image, cond, true);
+
+
         texture.loadFromImage (image);
 
         sf::Sprite sprite (texture);
