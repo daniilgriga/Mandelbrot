@@ -4,6 +4,6 @@
 #define SIZE_X 800
 #define SIZE_Y 800
 
-int GraphicsPart (struct Params_t* cond);
+int GraphicsPart (struct Params_t* cond, int* version);
 
 #endif // GRAPHICS_H

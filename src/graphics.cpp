@@ -2,7 +2,7 @@
 #include "mandelbrot_alg.hpp"
 #include <graphics.hpp>
 
-int GraphicsPart (struct Params_t* cond)
+int GraphicsPart (struct Params_t* cond, int* version)
 {
 // =================== main Window =================== //
     sf::RenderWindow    window (sf::VideoMode (SIZE_X, SIZE_Y), "Mandelbrot");
@@ -44,10 +44,27 @@ int GraphicsPart (struct Params_t* cond)
     {
         image.create (SIZE_X, SIZE_Y, sf::Color::Black);
 
-        // switch (operation)
+        switch (*version)
+        {
+            case 1:
+            {
+                fprintf (stderr, "Mandelbrot v1 started >>>\n");
 
-        RunMandelbrot_v1 (&image, cond, true);
+                RunMandelbrot_v1 (&image, cond, true);
+                break;
+            }
 
+            case 2:
+            {
+                fprintf (stderr, "Mandelbrot v2 started >>>\n");
+
+                RunMandelbrot_v2 (&image, cond, true);
+                break;
+            }
+
+            default:
+                fprintf (stderr, "Version dont choosed - usage: [--v<number> -g | --v<number> --graphics]");
+        }
 
         texture.loadFromImage (image);
 

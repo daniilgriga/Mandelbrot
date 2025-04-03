@@ -39,7 +39,7 @@ int main (int argc, char* argv[])
                 int error = sscanf (optarg, "%d", &iterations);
                 if (error == 0)
                 {
-                    fprintf (stderr, "Incorrect form -> usage:\n%s [-v<number> -r<number> | --v<number> --run=<number>]\n", argv[0]);
+                    fprintf (stderr, "Incorrect form -> usage:\n%s [--v<number> -r<number> | --v<number> --run=<number>]\n", argv[0]);
                     return 1;
                 }
                 break;
@@ -59,7 +59,7 @@ int main (int argc, char* argv[])
 
             case '?':
             {
-                fprintf (stderr, "Usage:\n%s [-g|--graphics]\nor\n%s [-v<number> -r<number> | --v<number> --run=<number>]\n", argv[0], argv[0]);
+                fprintf (stderr, "Usage:\n%s [-g|--graphics]\nor\n%s [--v<number> -r<number> | --v<number> --run=<number>]\n", argv[0], argv[0]);
                 return 1;
             }
 
@@ -71,7 +71,7 @@ int main (int argc, char* argv[])
 
     if (useGraphics)
     {
-        GraphicsPart (&startParams);       // if i add keyboard handler -> needs a error handler
+        GraphicsPart (&startParams, &version);       // if i add keyboard handler -> needs a error handler
     }
     else
     {
@@ -100,7 +100,7 @@ int main (int argc, char* argv[])
             }
 
             default:
-                fprintf (stderr, "Version dont choosed - usage: [-v<number> -r<number> | --v<number> --run=<number>]");
+                fprintf (stderr, "Version dont choosed - usage: [--v<number> -r<number> | --v<number> --run=<number>]");
         }
 
         for (int i = 0; i < iterations; i++)
