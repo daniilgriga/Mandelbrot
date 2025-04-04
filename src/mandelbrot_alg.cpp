@@ -195,7 +195,24 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
                 for (unsigned int i = 0; i < SIZE_ARR; i++)
                 {
-                    // TODO
+                    int abs_N = abs (N_arr[i]);
+
+                    if (abs_N == N_max)
+                    {
+                        color.r = 0;
+                        color.g = 0;
+                        color.b = 0;
+                    }
+                    else
+                    {
+                        float t = (float) abs_N / (float) N_max;
+                        int r = (int) (255*2.5 * t) + 7;
+                        int g = (int) (255*2.5 * t) + 7;
+                        int b = 0;
+                        color.r = (sf::Uint8) (r > 255 ? 255 : r);
+                        color.g = (sf::Uint8) (g > 255 ? 255 : g);
+                        color.b = (sf::Uint8) b;
+                    }
 
                     image->setPixel (ix + i, iy, color);
                 }

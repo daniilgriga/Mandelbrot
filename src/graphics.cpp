@@ -17,7 +17,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
         return 1;
     }
 
-    sf::RectangleShape fpsField (sf::Vector2f (110.f, 50.f));
+    sf::RectangleShape fpsField (sf::Vector2f (125.f, 50.f));
     fpsField.setPosition (4, 746);
     fpsField.setFillColor (sf::Color::Black);
     fpsField.setOutlineThickness (2);
@@ -48,7 +48,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
         {
             case 1:
             {
-                fprintf (stderr, "Mandelbrot [graphics] v1 started >>>\n");
+                fprintf (stderr, "Mandelbrot [graphics] v1 >>> ");
 
                 RunMandelbrot_v1 (&image, cond, true);
                 break;
@@ -56,7 +56,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
             case 2:
             {
-                fprintf (stderr, "Mandelbrot [graphics] v2 started >>>\n");
+                fprintf (stderr, "Mandelbrot [graphics] v2 >>> ");
 
                 RunMandelbrot_v2 (&image, cond, true);
                 break;
@@ -64,7 +64,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
             case 3:
             {
-                fprintf (stderr, "Mandelbrot [graphics] v3 started >>>\n");
+                fprintf (stderr, "Mandelbrot [graphics] v3 >>> ");
 
                 RunMandelbrot_v3 (&image, cond, true);
                 break;
