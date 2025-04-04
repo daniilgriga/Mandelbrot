@@ -155,9 +155,12 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
         for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += cond->dx*cond->scale*SIZE_ARR)
         {
-            __m256 x_0_array = _mm256_add_ps ( _mm256_set1_ps (x_0), _mm256_mul_ps ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f), _mm256_set1_ps (cond->dx*cond->scale) ));
+            __m256 x_0_array = _mm256_add_ps ( _mm256_set1_ps (x_0),
+                                               _mm256_mul_ps  ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f),
+                                               _mm256_set1_ps (cond->dx*cond->scale) )                                 );
+            __m256 y_0_array = _mm256_set1_ps (y_0);
             __m256 x = x_0_array;
-            __m256 y = _mm256_set1_ps (y_0);
+            __m256 y = y_0_array;
 
             __m256i N  = _mm256_setzero_si256 ();
             __m256 r_2 = _mm256_setzero_ps ();
@@ -178,7 +181,7 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
                 N = _mm256_add_epi32 (N, _mm256_castps_si256 (compare));
                 x = _mm256_add_ps (_mm256_sub_ps (x_2, y_2), x_0_array);
-                y = _mm256_add_ps (_mm256_add_ps (x_y, x_y), y);
+                y = _mm256_add_ps (_mm256_add_ps (x_y, x_y), y_0_array);
             }
 
             if (GraphicsFlag)
@@ -192,16 +195,7 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
                 for (unsigned int i = 0; i < SIZE_ARR; i++)
                 {
-                    fprintf (stderr, "[i] = %d\n", N_arr[i]);
-                    if (N_arr[i] < N_max)
-                    {
-                        if (N_arr[i] % 2 == 1)
-                            color = sf::Color::Blue;
-                        else
-                            color = sf::Color::Yellow;
-                        if (N_arr[i] > 5)
-                            color = sf::Color::White;
-                    }
+                    // TODO
 
                     image->setPixel (ix + i, iy, color);
                 }
