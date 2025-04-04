@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <SFML/Graphics.hpp>
+#include <immintrin.h>
 
 #include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
-#define SIZE_ARR 4
+#define SIZE_ARR 8
+
+const __m256 r_2_max_arr = _mm256_set1_ps (r_2_max);
 
 double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
@@ -90,12 +93,9 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
             for (int n = 0; n < N_max; n++)
             {
-                float x_2[SIZE_ARR] = {};
-                float y_2[SIZE_ARR] = {};
-                float x_y[SIZE_ARR] = {};
-                for (int i = 0; i < SIZE_ARR; i++) x_2[i] = x[i] * x[i];
-                for (int i = 0; i < SIZE_ARR; i++) y_2[i] = y[i] * y[i];
-                for (int i = 0; i < SIZE_ARR; i++) x_y[i] = x[i] * y[i];
+                float x_2[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) x_2[i] = x[i] * x[i];
+                float y_2[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) y_2[i] = y[i] * y[i];
+                float x_y[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) x_y[i] = x[i] * y[i];
 
                 float r_2[SIZE_ARR] = {};
                 for (int i = 0; i < SIZE_ARR; i++) r_2[i] = x_2[i] + y_2[i];
@@ -128,6 +128,78 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                         else
                             color = sf::Color::Black;
                         if (N[i] > 75)
+                            color = sf::Color::White;
+                    }
+
+                    image->setPixel (ix + i, iy, color);
+                }
+            }
+        }
+    }
+
+    clock_gettime (CLOCK_MONOTONIC, &end);
+
+    return (double) (end.tv_sec  - start.tv_sec) +
+           (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
+}
+
+double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
+{
+    struct timespec start, end;
+    clock_gettime (CLOCK_MONOTONIC, &start);
+
+    for (unsigned int iy = 0; iy < SIZE_Y; iy++)
+    {
+        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
+        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
+
+        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += cond->dx*cond->scale*SIZE_ARR)
+        {
+            __m256 x_0_array = _mm256_add_ps ( _mm256_set1_ps (x_0), _mm256_mul_ps ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f), _mm256_set1_ps (cond->dx*cond->scale) ));
+            __m256 x = x_0_array;
+            __m256 y = _mm256_set1_ps (y_0);
+
+            __m256i N  = _mm256_setzero_si256 ();
+            __m256 r_2 = _mm256_setzero_ps ();
+
+            for (int n = 0; n < N_max; n++)
+            {
+                __m256 x_2 = _mm256_mul_ps (x, x);
+                __m256 y_2 = _mm256_mul_ps (y, y);
+                __m256 x_y = _mm256_mul_ps (x, y);
+
+                r_2 = _mm256_add_ps (x_2, y_2);
+
+                __m256 compare = _mm256_cmp_ps (r_2, r_2_max_arr, _CMP_LE_OQ);
+
+                int mask = 0; mask = _mm256_movemask_ps (compare);
+                if (!mask)
+                    break;
+
+                N = _mm256_add_epi32 (N, _mm256_castps_si256 (compare));
+                x = _mm256_add_ps (_mm256_sub_ps (x_2, y_2), x_0_array);
+                y = _mm256_add_ps (_mm256_add_ps (x_y, x_y), y);
+            }
+
+            if (GraphicsFlag)
+            {
+                sf::Color color;
+                color = sf::Color::Black;
+
+                int N_arr[8] = {};
+
+                _mm256_storeu_si256 ( (__m256i*) N_arr, N);
+
+                for (unsigned int i = 0; i < SIZE_ARR; i++)
+                {
+                    fprintf (stderr, "[i] = %d\n", N_arr[i]);
+                    if (N_arr[i] < N_max)
+                    {
+                        if (N_arr[i] % 2 == 1)
+                            color = sf::Color::Blue;
+                        else
+                            color = sf::Color::Yellow;
+                        if (N_arr[i] > 5)
                             color = sf::Color::White;
                     }
 

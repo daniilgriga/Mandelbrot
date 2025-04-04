@@ -48,7 +48,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
         {
             case 1:
             {
-                fprintf (stderr, "Mandelbrot v1 started >>>\n");
+                fprintf (stderr, "Mandelbrot [graphics] v1 started >>>\n");
 
                 RunMandelbrot_v1 (&image, cond, true);
                 break;
@@ -56,14 +56,22 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
             case 2:
             {
-                fprintf (stderr, "Mandelbrot v2 started >>>\n");
+                fprintf (stderr, "Mandelbrot [graphics] v2 started >>>\n");
 
                 RunMandelbrot_v2 (&image, cond, true);
                 break;
             }
 
+            case 3:
+            {
+                fprintf (stderr, "Mandelbrot [graphics] v3 started >>>\n");
+
+                RunMandelbrot_v3 (&image, cond, true);
+                break;
+            }
+
             default:
-                fprintf (stderr, "Version dont choosed - usage: [--v<number> -g | --v<number> --graphics]");
+                fprintf (stderr, "Version wasn't selected - usage: [--v<number> -g | --v<number> --graphics]");
         }
 
         texture.loadFromImage (image);

@@ -12,6 +12,7 @@ static struct option long_options[] =
     {  "run"   , required_argument, nullptr, 'r'},
     {  "v1"    , optional_argument, nullptr, 'v'},
     {  "v2"    , optional_argument, nullptr, 'f'},
+    {  "v3"    , optional_argument, nullptr, 'i'},
     {  nullptr ,         0        , nullptr,  0 }
 };
 
@@ -24,7 +25,7 @@ int main (int argc, char* argv[])
     int version = 0;
     int option = 0;
 
-    while ((option = getopt_long (argc, argv, "gr:v::f::", long_options, nullptr)) != -1)
+    while ((option = getopt_long (argc, argv, "gr:v::f::i::", long_options, nullptr)) != -1)
     {
         switch (option)
         {
@@ -54,6 +55,12 @@ int main (int argc, char* argv[])
             case 'f':
             {
                 version = 2;
+                break;
+            }
+
+            case 'i':
+            {
+                version = 3;
                 break;
             }
 
@@ -99,6 +106,16 @@ int main (int argc, char* argv[])
                 break;
             }
 
+            case 3:
+            {
+                fprintf (stderr, "Mandelbrot v3 started >>>\n");
+
+                for (int i = 0; i < iterations; i++)
+                    fullTime += RunMandelbrot_v3 (nullptr, &startParams, false);
+
+                break;
+            }
+
             default:
                 fprintf (stderr, "Version dont choosed - usage: [--v<number> -r<number> | --v<number> --run=<number>]");
         }
@@ -111,3 +128,5 @@ int main (int argc, char* argv[])
 
     return 0;
 }
+// TODO     1. inline
+//          2. intrinsics

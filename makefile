@@ -1,6 +1,6 @@
 CC = g++
 
- FLAGS =-D _DEBUG -ggdb3 -O3 -Wall -Wextra  -Waggressive-loop-optimizations \
+ FLAGS =-D _DEBUG -ggdb3 -O3 -mavx2 -Wall -Wextra  -Waggressive-loop-optimizations \
  	   	-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
  		-Wconversion -Wempty-body -Wfloat-equal \
  		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline \
