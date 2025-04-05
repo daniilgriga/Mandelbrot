@@ -8,6 +8,16 @@
 
 #define SIZE_ARR 8
 
+// inline void mm256_add_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
+// inline void mm256_sub_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
+// inline void mm256_mul_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
+// inline void mm256_set_ps
+// inline void mm256_set1_ps
+// inline void mm256_setzero_ps ()
+// inline void mm256_add_epi32
+// inline void mm256_cmple_ps
+// inline void mm256_movemask_ps
+
 const __m256 r_2_max_arr = _mm256_set1_ps (r_2_max);
 
 double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
