@@ -58,4 +58,22 @@ The color is compiled by this algorithm for each of the rgb colors:
 |     ```r = (255*2.5 * t) + 7;```      |     ```g = (255*2.5 * t) + 7;```     |         0         |
 | ```color.r = (r > 255 ? 255 : r);```  | ```color.g = (g > 255 ? 255 : g);``` | ```color.b = b``` |
 
+In this way, the black areas from which the point failed to escape will be visible
+
 ## Optimization
+
+### btop++
+
+It is a modern, colorful command-line resource monitor for Linux, macOS, and BSD systems. Written in C++ as an evolution of *bashtop* and *bpytop*, it provides real-time stats on CPU, memory, disks, network, and processes.
+
+I will use btop to track the load on the processor cores and its temperature.
+
+### My hardware
+
+- **Processor:** AMD Ryzen 5 4500U 2.3 GHz (4 GHz in Turbo)
+- **OS:** Ubuntu 24.04.2 LTS
+
+Stabilized processor parameters during measurements:
+- **Temperature:** ```78°C```
+- **Frequency:** ```1.4 ± 0.1 GHz```
+
