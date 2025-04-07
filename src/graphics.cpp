@@ -142,3 +142,33 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
     return 0;
 }
+
+void SetPixels (sf::Image* image, unsigned int ix, unsigned int iy, int* N)
+{
+    sf::Color color;
+    color = sf::Color::Black;
+
+    for (unsigned int i = 0; i < SIZE_ARR; i++)
+    {
+        int abs_N = abs (N[i]);
+
+        if (abs_N == N_max)
+        {
+            color.r = 0;
+            color.g = 0;
+            color.b = 0;
+        }
+        else
+        {
+            mandl_t t = (mandl_t) abs_N / (mandl_t) N_max;
+            int r = (int) (255*2.5 * t) + 7;
+            int g = (int) (255*2.5 * t) + 7;
+            int b = 0;
+            color.r = (sf::Uint8) (r > 255 ? 255 : r);
+            color.g = (sf::Uint8) (g > 255 ? 255 : g);
+            color.b = (sf::Uint8) b;
+        }
+
+        image->setPixel (ix + i, iy, color);
+    }
+}

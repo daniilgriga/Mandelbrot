@@ -6,4 +6,6 @@
 
 int GraphicsPart (struct Params_t* cond, int* version);
 
+void SetPixels (sf::Image* image, unsigned int ix, unsigned int iy, int* N);
+
 #endif // GRAPHICS_H

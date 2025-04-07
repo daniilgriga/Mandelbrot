@@ -6,44 +6,59 @@
 #include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
-#define SIZE_ARR 8
+inline void mm256_add_epi32	(int* dst, int* a, int* b)	           { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] + b[i];          }
+inline void mm256_add_ps    (mandl_t* dst, mandl_t* a, mandl_t* b) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] + b[i];          }
+inline void mm256_sub_ps    (mandl_t* dst, mandl_t* a, mandl_t* b) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] - b[i];          }
+inline void mm256_mul_ps    (mandl_t* dst, mandl_t* a, mandl_t* b) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] * b[i];          }
+inline void mm_cpy_ps		(mandl_t* dst, mandl_t* src) 		   { for (int i = 0; i < SIZE_ARR; i++) dst[i] = src[i];               }
+inline void mm256_cmple_ps  (int* a, mandl_t* b, mandl_t val)      { for (int i = 0; i < SIZE_ARR; i++) { if (b[i] <= val) a[i] = 1; } }
 
-// inline void mm256_add_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
-// inline void mm256_sub_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
-// inline void mm256_mul_ps (mandl_t* dst, mandl_t* a, mandl_t* b)
-// inline void mm256_set_ps
-// inline void mm256_set1_ps
-// inline void mm256_setzero_ps ()
-// inline void mm256_add_epi32
-// inline void mm256_cmple_ps
-// inline void mm256_movemask_ps
+inline void mm256_set1_ps  (mandl_t* dst, mandl_t e) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = e; }
+
+inline void mm256_set_ps   (mandl_t* dst, mandl_t e7, mandl_t e6, mandl_t e5, mandl_t e4, mandl_t e3, mandl_t e2, mandl_t e1, mandl_t e0)
+{
+    dst[0] = e0; dst[1] = e1;
+    dst[2] = e2; dst[3] = e3;
+    dst[4] = e4; dst[5] = e5;
+    dst[6] = e6; dst[7] = e7;
+}
+
+inline int mm256_movemask_ps (int* a)
+{
+    int mask = 0;
+    for (int i = 0; i < SIZE_ARR; i++) mask |= (a[i] << i);
+
+    return mask;
+}
 
 const __m256 r_2_max_arr = _mm256_set1_ps (r_2_max);
 
 double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
+    mandl_t dx = cond->dx*cond->scale;
+
     struct timespec start, end;
     clock_gettime (CLOCK_MONOTONIC, &start);
 
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
-        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
-        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
+        mandl_t x_0 =  (                         - (mandl_t) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
+        mandl_t y_0 =  ((mandl_t) iy*cond->scale - (mandl_t) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
 
-        for (unsigned int ix = 0; ix < SIZE_X; ix++, x_0 += cond->dx*cond->scale)
+        for (unsigned int ix = 0; ix < SIZE_X; ix++, x_0 += dx)
         {
-            float x = x_0;
-            float y = y_0;
+            mandl_t x = x_0;
+            mandl_t y = y_0;
 
             int N = 0;
 
             for ( ; N < N_max; N++)
             {
-                float x_2 = x * x;
-                float y_2 = y * y;
-                float x_y = x * y;
+                mandl_t x_2 = x * x;
+                mandl_t y_2 = y * y;
+                mandl_t x_y = x * y;
 
-                float r_2 = x_2 + y_2;
+                mandl_t r_2 = x_2 + y_2;
 
                 if (r_2 >= r_2_max)
                     break;
@@ -57,16 +72,22 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 sf::Color color;
                 color = sf::Color::Black;
 
-                if (N != N_max)
+                if (N == N_max)
                 {
-                    if (N % 2 == 1)
-                        color = sf::Color::Blue;
-                    else
-                        color = sf::Color::Black;
-                    if (N > 75)
-                        color = sf::Color::White;
+                    color.r = 0;
+                    color.g = 0;
+                    color.b = 0;
                 }
-
+                else
+                {
+                    mandl_t t = (mandl_t) N / (mandl_t) N_max;
+                    int r = (int) (255*2.5 * t) + 7;
+                    int g = (int) (255*2.5 * t) + 7;
+                    int b = 0;
+                    color.r = (sf::Uint8) (r > 255 ? 255 : r);
+                    color.g = (sf::Uint8) (g > 255 ? 255 : g);
+                    color.b = (sf::Uint8) b;
+                }
                 image->setPixel (ix, iy, color);
             }
         }
@@ -81,69 +102,58 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
 double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
+    mandl_t dx = cond->dx*cond->scale;
+
     struct timespec start, end;
     clock_gettime (CLOCK_MONOTONIC, &start);
 
-    float x_0_array[SIZE_ARR] = {};
-    float x[SIZE_ARR] = {};
-    float y[SIZE_ARR] = {};
-
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
-        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
-        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
+        mandl_t x_0 =  (                         - (mandl_t) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
+        mandl_t y_0 =  ((mandl_t) iy*cond->scale - (mandl_t) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
 
-        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += cond->dx*cond->scale*SIZE_ARR)
+        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += dx*SIZE_ARR)
         {
-            for (int i = 0; i < SIZE_ARR; i++) x_0_array[i] = x_0 + cond->dx*((float)i)*cond->scale;
-            for (int i = 0; i < SIZE_ARR; i++) x[i] = x_0_array[i];
-            for (int i = 0; i < SIZE_ARR; i++) y[i] = y_0;
+            mandl_t x_0_arr[SIZE_ARR] = {};
+            mandl_t y_0_arr[SIZE_ARR] = {};
+            mandl_t x[SIZE_ARR] = {};
+            mandl_t y[SIZE_ARR] = {};
+
+            mm256_set_ps (x_0_arr, x_0 + 7*dx, x_0 + 6*dx, x_0 + 5*dx,
+                                   x_0 + 4*dx, x_0 + 3*dx, x_0 + 2*dx,
+                                   x_0 + 1*dx, x_0);
+            mm256_set1_ps (y_0_arr, y_0);
+
+            mm_cpy_ps (x, x_0_arr);
+            mm_cpy_ps (y, y_0_arr);
 
             int N[SIZE_ARR] = {};
 
             for (int n = 0; n < N_max; n++)
             {
-                float x_2[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) x_2[i] = x[i] * x[i];
-                float y_2[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) y_2[i] = y[i] * y[i];
-                float x_y[SIZE_ARR] = {}; for (int i = 0; i < SIZE_ARR; i++) x_y[i] = x[i] * y[i];
+                mandl_t x_2[SIZE_ARR] = {}; mm256_mul_ps (x_2, x, x);
+                mandl_t y_2[SIZE_ARR] = {}; mm256_mul_ps (y_2, y, y);
+                mandl_t x_y[SIZE_ARR] = {}; mm256_mul_ps (x_y, x, y);
 
-                float r_2[SIZE_ARR] = {};
-                for (int i = 0; i < SIZE_ARR; i++) r_2[i] = x_2[i] + y_2[i];
+                mandl_t r_2[SIZE_ARR] = {}; mm256_add_ps (r_2, x_2, y_2);
 
-                int compare[SIZE_ARR] = {};
-                for (int i = 0; i < SIZE_ARR; i++) if (r_2[i] <= r_2_max) compare[i] = 1;
+                int compare[SIZE_ARR] = {}; mm256_cmple_ps (compare, r_2, r_2_max);
 
-                int mask = 0;
-                for (int i = 0; i < SIZE_ARR; i++) mask |= (compare[i] << i);
+                int mask = mm256_movemask_ps (compare);
                 if (!mask)
                     break;
 
-                for (int i = 0; i < SIZE_ARR; i++) N[i] = N[i] + compare[i];
+                mm256_add_epi32 (N, N, compare);
 
-                for (int i = 0; i < SIZE_ARR; i++) x[i] = x_2[i] - y_2[i] + x_0_array[i];
-                for (int i = 0; i < SIZE_ARR; i++) y[i] = x_y[i] * 2 + y_0;
+                mm256_sub_ps (x, x_2, y_2);
+                mm256_add_ps (x, x, x_0_arr);
+
+                mm256_add_ps (y, x_y, x_y);
+                mm256_add_ps (y, y, y_0_arr);
             }
 
             if (GraphicsFlag)
-            {
-                sf::Color color;
-                color = sf::Color::Black;
-
-                for (unsigned int i = 0; i < SIZE_ARR; i++)
-                {
-                    if (N[i] < N_max)
-                    {
-                        if (N[i] % 2 == 1)
-                            color = sf::Color::Blue;
-                        else
-                            color = sf::Color::Black;
-                        if (N[i] > 75)
-                            color = sf::Color::White;
-                    }
-
-                    image->setPixel (ix + i, iy, color);
-                }
-            }
+                SetPixels (image, ix, iy, N);
         }
     }
 
@@ -155,19 +165,21 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
 double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
+    mandl_t dx = cond->dx*cond->scale;
+
     struct timespec start, end;
     clock_gettime (CLOCK_MONOTONIC, &start);
 
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
     {
-        float x_0 =  (                       - (float) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
-        float y_0 =  ((float) iy*cond->scale - (float) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
+        mandl_t x_0 =  (                         - (mandl_t) SIZE_X*cond->scale/2) * cond->dx + cond->xc;
+        mandl_t y_0 =  ((mandl_t) iy*cond->scale - (mandl_t) SIZE_Y*cond->scale/2) * cond->dy + cond->yc;
 
-        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += cond->dx*cond->scale*SIZE_ARR)
+        for (unsigned int ix = 0; ix < SIZE_X; ix += SIZE_ARR, x_0 += dx*SIZE_ARR)
         {
             __m256 x_0_array = _mm256_add_ps ( _mm256_set1_ps (x_0),
                                                _mm256_mul_ps  ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f),
-                                               _mm256_set1_ps (cond->dx*cond->scale) )                                 );
+                                               _mm256_set1_ps (dx) ) );
             __m256 y_0_array = _mm256_set1_ps (y_0);
             __m256 x = x_0_array;
             __m256 y = y_0_array;
@@ -196,36 +208,10 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
             if (GraphicsFlag)
             {
-                sf::Color color;
-                color = sf::Color::Black;
-
                 int N_arr[8] = {};
-
                 _mm256_storeu_si256 ( (__m256i*) N_arr, N);
 
-                for (unsigned int i = 0; i < SIZE_ARR; i++)
-                {
-                    int abs_N = abs (N_arr[i]);
-
-                    if (abs_N == N_max)
-                    {
-                        color.r = 0;
-                        color.g = 0;
-                        color.b = 0;
-                    }
-                    else
-                    {
-                        float t = (float) abs_N / (float) N_max;
-                        int r = (int) (255*2.5 * t) + 7;
-                        int g = (int) (255*2.5 * t) + 7;
-                        int b = 0;
-                        color.r = (sf::Uint8) (r > 255 ? 255 : r);
-                        color.g = (sf::Uint8) (g > 255 ? 255 : g);
-                        color.b = (sf::Uint8) b;
-                    }
-
-                    image->setPixel (ix + i, iy, color);
-                }
+                SetPixels (image, ix, iy, N_arr);
             }
         }
     }

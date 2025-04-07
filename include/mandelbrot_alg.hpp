@@ -3,6 +3,8 @@
 
 #include "graphics.hpp"
 
+#define SIZE_ARR 8
+
 struct Params_t
 {
     float xc,
@@ -13,6 +15,8 @@ struct Params_t
     const float dy = 2.0f/SIZE_Y;
     const float ds = 1.2f;
 };
+
+typedef float mandl_t;
 
 const int   N_max = 256;
 const float r_2_max = 10.f;
