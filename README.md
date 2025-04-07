@@ -38,11 +38,20 @@ where:
 - ```z_y``` ----- imaginary part
 - ```z_xy``` ----- ```z_x * z_y```
 
-We keep track of the number of steps it takes for the point to go outside the circle (```Rmax```). If this does not happen before ```N``` iterations, the loop stops.
+We keep track of the number of steps it takes for the point to go outside the circle. If this does not happen before N iterations, the loop stops.
 
 My const values:
-- ```Rmax``` = 10
-- ```N``` = 256
+- Size of graphics window = `800*800`
+- Radius of circle = `10`
+- N = `256`
+
+There are three implementations of this:
+
+**1.** Simple - *pixel-by-pixel calculation*
+
+**2.** Vector - *vectorization*, help compiler to optimize (consider arrays of 8 pixels)
+
+**3.** AVX - *vectorization with `AVX`*, using SIMD intrinsics
 
 ### Modes
 
@@ -70,10 +79,14 @@ I will use btop to track the load on the processor cores and its temperature.
 
 ### My hardware
 
-- **Processor:** AMD Ryzen 5 4500U 2.3 GHz (4 GHz in Turbo)
-- **OS:** Ubuntu 24.04.2 LTS
+- **Processor:** ```AMD Ryzen 5 4500U 2.3 GHz (4 GHz in Turbo)```
+- **OS:** ```Ubuntu 24.04.2 LTS```
 
 Stabilized processor parameters during measurements:
 - **Temperature:** ```78°C```
 - **Frequency:** ```1.4 ± 0.1 GHz```
+
+### Productivity measurement
+
+We will measure 20 times for each version of the algorithm, running the algorithm itself 100 times.
 
