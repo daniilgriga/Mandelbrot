@@ -121,7 +121,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
         if (totalTime > 0.0f)
             averageFps = (float) frameCount / totalTime;
 
-        snprintf (resultFps, sizeof (resultFps), "FPS: %.f", averageFps);
+        snprintf (resultFps, sizeof (resultFps), "FPS: %.1f", averageFps);
 
         fpsText.setString (resultFps);
 
