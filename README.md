@@ -30,7 +30,6 @@ The Mandelbrot set uses x and y axes, where ```c = x + yi```. Start with ```z = 
 ```
 z_x = z_x² - z_y² + x
 z_y = 2 * z_xy + y
-
 ```
 where:
 - ```x``` -----  X coordinate of the calculated pixel
@@ -49,3 +48,14 @@ My const values:
 
 - **Image output**. Used to verify the algorithm and calculate the FPS
 - **Timing**. Used to measure the running time of n iterations of the Mandelbrot algorithm
+
+### Graphics
+
+The color is compiled by this algorithm for each of the rgb colors:
+
+|                color.r                |                color.g               |      color.b      |
+|---------------------------------------|--------------------------------------|-------------------|
+|     ```r = (255*2.5 * t) + 7;```      |     ```g = (255*2.5 * t) + 7;```     |         0         |
+| ```color.r = (r > 255 ? 255 : r);```  | ```color.g = (g > 255 ? 255 : g);``` | ```color.b = b``` |
+
+## Optimization
