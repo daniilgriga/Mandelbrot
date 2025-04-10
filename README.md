@@ -6,6 +6,8 @@
 
 ## General information
 
+![fractal](img/fractal.png)
+
 Lab work on programming from the ded32 course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
 I have to measure the time spent on calculation and try to reduce it with my optimizations.
 
@@ -21,7 +23,7 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
 - [Optimization](#optimization)
     - [btop++](#btop)
     - [My hardware](#hardware)
-    - [Productivity measurement](#productivity)
+    - [Performance measurement](#productivity)
 
 ## Program
 
@@ -84,10 +86,13 @@ I will use btop to track the load on the processor cores and its temperature.
 - **OS:** ```Ubuntu 24.04.2 LTS```
 
 Stabilized processor parameters during measurements:
-- **Temperature:** ```78°C```
+- **Temperature:** ```76°C```
 - **Frequency:** ```1.4 ± 0.1 GHz```
 
-### Productivity measurement
+![btop](img/btop.png)
 
-We will measure 20 times for each version of the algorithm, running the algorithm itself 100 times.
+### Performance measurement
 
+We will measure 20 times for each version of the algorithm, running the algorithm itself 300 times.
+
+The full table of measurements can be found [here](https://github.com/daniilgriga/Mandelbrot/blob/main/data.md)
