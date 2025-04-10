@@ -96,3 +96,7 @@ Stabilized processor parameters during measurements:
 We will measure 20 times for each version of the algorithm, running the algorithm itself 300 times.
 
 The full table of measurements can be found [here](https://github.com/daniilgriga/Mandelbrot/blob/main/data.md)
+
+Based on these results, I constructed a histogram:
+
+![histo](img/histo.png)
