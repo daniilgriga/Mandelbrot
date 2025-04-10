@@ -3,7 +3,7 @@
 result_file="data.md"
 
 COMPILERS=("g++" "clang++")
-FLAGS=("-O3" "-O2")
+FLAGS=("-O3" "-O2" "-O0")
 ARGS=("--v3" "--v2" "--v1")
 
 cp makefile makefile.bak                                            # save
