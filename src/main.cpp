@@ -78,10 +78,17 @@ int main (int argc, char* argv[])
 
     if (useGraphics)
     {
-        GraphicsPart (&startParams, &version);       // if i add keyboard handler -> needs a error handler
+        GraphicsPart (&startParams, &version);
     }
     else
     {
+        FILE* data = fopen ("data.md", "a");
+        if (data == NULL)
+        {
+            fprintf (stderr, "File with data didn't open\n");
+            return 1;
+        }
+
         double fullTime = 0;
 
         switch (version)
@@ -124,9 +131,8 @@ int main (int argc, char* argv[])
             fullTime += RunMandelbrot_v2 (nullptr, &startParams, false);
 
         fprintf (stderr, "Mandelbrot algorithm <%d> times took: <%g> seconds!\n", iterations, fullTime);
+        fprintf (data, "| %g |\n", fullTime);
     }
 
     return 0;
 }
-// TODO     1. inline
-//          2. intrinsics

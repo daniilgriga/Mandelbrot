@@ -1,7 +1,7 @@
-CC = g++
+CC = clang++
 
- FLAGS =-D _DEBUG -ggdb3 -O3 -mavx2 -Wall -Wextra  -Waggressive-loop-optimizations \
- 	   	-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
+ FLAGS =-O3 -mavx2 #-D _DEBUG -ggdb3 -Wall -Wextra  -Waggressive-loop-optimizations \
+ 	   	#-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
  		-Wconversion -Wempty-body -Wfloat-equal \
  		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline \
  		-Wlogical-op -Wopenmp-simd -Wpacked \
@@ -11,7 +11,7 @@ CC = g++
  		-Wswitch-enum -Wsync-nand -Wundef -Wunreachable-code -Wunused \
  		-Wvariadic-macros -Wno-missing-field-initializers -Wno-narrowing \
  		-Wno-varargs -Wstack-protector \
- 		-fstack-protector -fstrict-overflow -flto-odr-type-merging -fno-omit-frame-pointer \
+ 		-fstack-protector -fstrict-overflow -flto -fno-omit-frame-pointer \
  		-pie -fPIE -Werror=vla \
 
 CFLAGS = -c $(FLAGS)
