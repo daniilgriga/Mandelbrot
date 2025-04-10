@@ -1,3 +1,5 @@
+#define MEASURE
+
 #include <stdio.h>
 #include <time.h>
 #include <SFML/Graphics.hpp>
@@ -66,34 +68,35 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 x = x_2 - y_2 + x_0;
                 y = x_y + x_y + y_0;
             }
+#ifndef MEASURE
+            if (GraphicsFlag)
+            {
+                sf::Color color;
+                color = sf::Color::Black;
 
+                if (N == N_max)
+                {
+                    color.r = 0;
+                    color.g = 0;
+                    color.b = 0;
+                }
+                else
+                {
+                    mandl_t t = (mandl_t) N / (mandl_t) N_max;
+                    int r = (int) (255*2.5 * t) + 7;
+                    int g = (int) (255*2.5 * t) + 7;
+                    int b = 0;
+                    color.r = (sf::Uint8) (r > 255 ? 255 : r);
+                    color.g = (sf::Uint8) (g > 255 ? 255 : g);
+                    color.b = (sf::Uint8) b;
+                }
+                image->setPixel (ix, iy, color);
+            }
+#else
             v_arr[0] = x;
             v_arr[0] = y;
             v_arr[0] = (mandl_t)N;
-
-            //if (GraphicsFlag)
-            //{
-            //    sf::Color color;
-            //    color = sf::Color::Black;
-            //
-            //    if (N == N_max)
-            //    {
-            //        color.r = 0;
-            //        color.g = 0;
-            //        color.b = 0;
-            //    }
-            //    else
-            //    {
-            //        mandl_t t = (mandl_t) N / (mandl_t) N_max;
-            //        int r = (int) (255*2.5 * t) + 7;
-            //        int g = (int) (255*2.5 * t) + 7;
-            //        int b = 0;
-            //        color.r = (sf::Uint8) (r > 255 ? 255 : r);
-            //        color.g = (sf::Uint8) (g > 255 ? 255 : g);
-            //        color.b = (sf::Uint8) b;
-            //    }
-            //    image->setPixel (ix, iy, color);
-            //}
+#endif
         }
     }
 
@@ -154,12 +157,14 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 mm256_add_ps (y, y, y_0_arr);
             }
 
+#ifndef MEASURE
+            if (GraphicsFlag)
+                SetPixels (image, ix, iy, N);
+#else
             v_arr[0] = *N;
             v_arr[0] = *x;
             v_arr[0] = *y;
-
-            // if (GraphicsFlag)
-            //    SetPixels (image, ix, iy, N);
+#endif
         }
     }
 
@@ -209,13 +214,15 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 y = _mm256_add_ps (_mm256_add_ps (x_y, x_y), y_0_array);
             }
 
-            //if (GraphicsFlag)
-            //{
-            //     int N_arr[8] = {};
-            //     _mm256_storeu_si256 ( (__m256i*) N_arr, N);
-            //
-            //    SetPixels (image, ix, iy, N_arr);
-            //}
+#ifndef MEASURE
+            if (GraphicsFlag)
+            {
+                 int N_arr[8] = {};
+                 _mm256_storeu_si256 ( (__m256i*) N_arr, N);
+
+                SetPixels (image, ix, iy, N_arr);
+            }
+#endif
         }
     }
 
