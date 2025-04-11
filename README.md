@@ -4,9 +4,9 @@
 
 # Mandelbrot
 
-## General information
-
 ![fractal](img/fractal.png)
+
+## General information
 
 Lab work on programming from the ded32 course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
 I have to measure the time spent on calculation and try to reduce it with my optimizations.
@@ -24,6 +24,7 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
     - [btop++](#btop)
     - [My hardware](#hardware)
     - [Performance measurement](#productivity)
+- [Results](#results)
 
 ## Program
 
@@ -95,8 +96,17 @@ Stabilized processor parameters during measurements:
 
 We will measure 20 times for each version of the algorithm, running the algorithm itself 300 times.
 
+I used the following compilation parameters:
+- `g++`, with `-O3`
+- `g++`, with `-O2`
+- `clang++`, with `-O3`
+- `clang++`, with `-O2`
+
 The full table of measurements can be found [here](https://github.com/daniilgriga/Mandelbrot/blob/main/data.md)
 
 Based on these results, I constructed a histogram:
 
 ![histo](img/histo.png)
+
+## Results
+
