@@ -321,4 +321,4 @@ Based on these results, I constructed a histogram:
 
 ## Results
 
-The third version of the function, using intrinsics for the Mandelbrot set, runs **3.3** times faster than the first (simple) with `g++` and **5.7** times faster with `clang++`. This is due to efficient SIMD instructions in the second function, processing multiple pixels in parallel. `clang++` achieves greater speedup through aggressive optimizations: better code generation for intrinsics, efficient SIMD register management, and reduced overhead for branching and memory access. `g++` optimizes intrinsics less effectively, leading to smaller speedup.
+The third version of the function, using intrinsics for the Mandelbrot set, runs **3.3** times faster than the first (simple) with `g++` and **5.7** times faster with `clang++`. This is due to efficient SIMD instructions in the third function, processing multiple pixels in parallel. `clang++` achieves greater speedup through aggressive optimizations: better code generation for intrinsics, efficient SIMD register management, and reduced overhead for branching and memory access. `g++` optimizes intrinsics less effectively, leading to smaller speedup.
