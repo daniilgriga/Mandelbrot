@@ -8,7 +8,7 @@
 
 ## General information
 
-Lab work on programming from the ded32 course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
+Lab work on programming in the the [ded32](https://github.com/ded32) course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
 I have to measure the time spent on calculation and try to reduce it with my optimizations.
 
 To debug the algorithm I draw the Mandelbrot set with SFML.
