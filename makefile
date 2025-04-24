@@ -1,4 +1,4 @@
-CC = g++
+CC = clang++
 
  FLAGS =-O3 -mavx2 #-D _DEBUG -ggdb3 -Wall -Wextra  -Waggressive-loop-optimizations \
  	   	#-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \

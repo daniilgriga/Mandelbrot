@@ -8,6 +8,8 @@
 #include "graphics.hpp"
 #include "mandelbrot_alg.hpp"
 
+const float billion = 1000000000.0f;
+
 inline void mm256_add_epi32	(int* dst, int* a, int* b)	           { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] + b[i];          }
 inline void mm256_add_ps    (mandl_t* dst, mandl_t* a, mandl_t* b) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] + b[i];          }
 inline void mm256_sub_ps    (mandl_t* dst, mandl_t* a, mandl_t* b) { for (int i = 0; i < SIZE_ARR; i++) dst[i] = a[i] - b[i];          }
@@ -33,7 +35,7 @@ inline int mm256_movemask_ps (int* a)
     return mask;
 }
 
-volatile mandl_t v_arr[1] = {};
+volatile mandl_t v_arr[SIZE_X * SIZE_Y] = {};
 
 const __m256 r_2_max_arr = _mm256_set1_ps (r_2_max);
 
@@ -93,9 +95,9 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                 image->setPixel (ix, iy, color);
             }
 #else
-            v_arr[0] = x;
-            v_arr[0] = y;
-            v_arr[0] = (mandl_t)N;
+            v_arr[ix] = x;
+            v_arr[ix] = y;
+            v_arr[ix] = (mandl_t)N;
 #endif
         }
     }
@@ -103,13 +105,13 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
     clock_gettime (CLOCK_MONOTONIC, &end);
 
     return (double) (end.tv_sec  - start.tv_sec) +
-           (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
+           (double) (end.tv_nsec - start.tv_nsec) / billion;
 }
 
 
 double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
-    struct timespec start, end;
+    struct timespec start = {}, end = {};
     clock_gettime (CLOCK_MONOTONIC, &start);
 
     for (unsigned int iy = 0; iy < SIZE_Y; iy++)
@@ -161,9 +163,9 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
             if (GraphicsFlag)
                 SetPixels (image, ix, iy, N);
 #else
-            v_arr[0] = *N;
-            v_arr[0] = *x;
-            v_arr[0] = *y;
+                v_arr[ix] = *N;
+                v_arr[ix] = *x;
+                v_arr[ix] = *y;
 #endif
         }
     }
@@ -171,7 +173,7 @@ double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsF
     clock_gettime (CLOCK_MONOTONIC, &end);
 
     return (double) (end.tv_sec  - start.tv_sec) +
-           (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
+           (double) (end.tv_nsec - start.tv_nsec) / billion;
 }
 
 double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
@@ -190,8 +192,8 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                                                _mm256_mul_ps  ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f),
                                                _mm256_set1_ps (cond->dx*cond->scale) ) );
             __m256 y_0_array = _mm256_set1_ps (y_0);
-            __m256 x = _mm256_movehdup_ps (x_0_array);
-            __m256 y = _mm256_movehdup_ps (y_0_array);
+            __m256 x = x_0_array;
+            __m256 y = y_0_array;
 
             __m256i N  = _mm256_setzero_si256 ();
 
@@ -217,11 +219,17 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 #ifndef MEASURE
             if (GraphicsFlag)
             {
-                 int N_arr[8] = {};
-                 _mm256_storeu_si256 ( (__m256i*) N_arr, N);
+                int N_arr[8] = {};
+                _mm256_storeu_si256 ( (__m256i*) N_arr, N);
 
                 SetPixels (image, ix, iy, N_arr);
             }
+//#else
+//             int N_arr[8] = {};
+//             _mm256_storeu_si256 ( (__m256i*) N_arr, N);
+//
+//             for (int i = 0; i < SIZE_ARR; i++)
+//                 v_arr[(int)(y[i] * SIZE_X + x[i])] = N_arr[i];
 #endif
         }
     }
@@ -230,7 +238,7 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
 
     return (double) (end.tv_sec  - start.tv_sec) +
-           (double) (end.tv_nsec - start.tv_nsec) / 1000000000.0;
+           (double) (end.tv_nsec - start.tv_nsec) / billion;
 }
 
 // TODO - гистрограмма
