@@ -133,7 +133,7 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 
 <details>
 <summary>Click to expand/collapse</summary>
-    
+
 ``` C
 double RunMandelbrot_v2 (sf::Image* image, struct Params_t* cond, bool GraphicsFlag)
 {
@@ -221,8 +221,8 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                                                _mm256_mul_ps  ( _mm256_set_ps (7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f, 0.f),
                                                _mm256_set1_ps (cond->dx*cond->scale) ) );
             __m256 y_0_array = _mm256_set1_ps (y_0);
-            __m256 x = _mm256_movehdup_ps (x_0_array);
-            __m256 y = _mm256_movehdup_ps (y_0_array);
+            __m256 x = x_0_array;
+            __m256 y = y_0_array;
 
             __m256i N  = _mm256_setzero_si256 ();
 
