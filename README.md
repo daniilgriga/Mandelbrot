@@ -14,7 +14,7 @@ I have to measure the time spent on calculation and try to reduce it with my opt
 To debug the algorithm I draw the Mandelbrot set with SFML.
 
 
-## Context
+## Table of Contents
 
 - [Program](#program)
     - [Algorithm](#algorithm)
