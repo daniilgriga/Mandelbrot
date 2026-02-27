@@ -1,7 +1,8 @@
-#define MEASURE
+// #define MEASURE
 
 #include <stdio.h>
 #include <time.h>
+#include <cstdint>
 #include <SFML/Graphics.hpp>
 #include <immintrin.h>
 
@@ -88,11 +89,11 @@ double RunMandelbrot_v1 (sf::Image* image, struct Params_t* cond, bool GraphicsF
                     int r = (int) (255*2.5 * t) + 7;
                     int g = (int) (255*2.5 * t) + 7;
                     int b = 0;
-                    color.r = (sf::Uint8) (r > 255 ? 255 : r);
-                    color.g = (sf::Uint8) (g > 255 ? 255 : g);
-                    color.b = (sf::Uint8) b;
+                    color.r = static_cast<std::uint8_t> (r > 255 ? 255 : r);
+                    color.g = static_cast<std::uint8_t> (g > 255 ? 255 : g);
+                    color.b = static_cast<std::uint8_t> (b);
                 }
-                image->setPixel (ix, iy, color);
+                image->setPixel ({ix, iy}, color);
             }
 #else
             v_arr[ix] = x;

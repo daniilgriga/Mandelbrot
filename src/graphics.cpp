@@ -1,34 +1,36 @@
 #include <SFML/Graphics.hpp>
+#include <cstdint>
+#include <optional>
 #include "mandelbrot_alg.hpp"
 #include <graphics.hpp>
 
 int GraphicsPart (struct Params_t* cond, int* version)
 {
 // =================== main Window =================== //
-    sf::RenderWindow    window (sf::VideoMode (SIZE_X, SIZE_Y), "Mandelbrot");
+    sf::RenderWindow window (sf::VideoMode ({SIZE_X, SIZE_Y}), "Mandelbrot");
     sf::Image image;
     sf::Texture texture;
 // =================================================== //
 
     sf::Font font;
-    if (!font.loadFromFile ("build/arial_b.ttf"))
-    {
-        fprintf (stderr, "Error: Cannot load font\n");
-        return 1;
-    }
+    const bool hasFont = font.openFromFile ("assets/fonts/DejaVuSans-Bold.ttf");
+    if (!hasFont)
+        fprintf (stderr, "Warning: Cannot load font assets/fonts/DejaVuSans-Bold.ttf, FPS overlay disabled\n");
 
-    sf::RectangleShape fpsField (sf::Vector2f (125.f, 50.f));
-    fpsField.setPosition (4, 746);
+    sf::RectangleShape fpsField (sf::Vector2f (150.f, 50.f));
+    fpsField.setPosition ({4.f, 746.f});
     fpsField.setFillColor (sf::Color::Black);
     fpsField.setOutlineThickness (2);
     fpsField.setOutlineColor (sf::Color::White);
 
-    sf::Text fpsText;
-    fpsText.setFont (font);
-    fpsText.setCharacterSize (24);
-    fpsText.setFillColor (sf::Color::White);
-    fpsText.setPosition ( fpsField.getPosition ().x + 10,
-                          fpsField.getPosition ().y + (fpsField.getSize ().y - fpsText.getGlobalBounds ().height) / 2 - 12);
+    std::optional<sf::Text> fpsText;
+    if (hasFont)
+    {
+        fpsText.emplace (font, "", 24);
+        fpsText->setFillColor (sf::Color::White);
+        fpsText->setPosition ({fpsField.getPosition ().x + 10.f,
+                               fpsField.getPosition ().y + (fpsField.getSize ().y - fpsText->getGlobalBounds ().size.y) / 2.f - 12.f});
+    }
 
     sf::Clock clock;
     float lastTime = clock.getElapsedTime().asSeconds();
@@ -42,7 +44,7 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
     while (window.isOpen())
     {
-        image.create (SIZE_X, SIZE_Y, sf::Color::Black);
+        image.resize ({SIZE_X, SIZE_Y}, sf::Color::Black);
 
         switch (*version)
         {
@@ -74,42 +76,51 @@ int GraphicsPart (struct Params_t* cond, int* version)
                 fprintf (stderr, "Version wasn't selected - usage: [--v<number> -g | --v<number> --graphics]");
         }
 
-        texture.loadFromImage (image);
-
-        sf::Sprite sprite (texture);
-        sf::Event event;
-
-        while (window.pollEvent (event))
+        if (!texture.loadFromImage (image))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
+            fprintf (stderr, "Error: Cannot load image to texture\n");
+            return 1;
         }
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
-            window.close();
+        sf::Sprite sprite (texture);
+        while (const std::optional event = window.pollEvent ())
+        {
+            if (event->is<sf::Event::Closed> ())
+            {
+                window.close();
+                continue;
+            }
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-            cond->xc += cond->dx * cond->scale;
+            const auto* keyPressed = event->getIf<sf::Event::KeyPressed> ();
+            if (keyPressed == nullptr)
+                continue;
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-            cond->xc -= cond->dx * cond->scale;
+            if (keyPressed->code == sf::Keyboard::Key::Escape)
+                window.close();
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-            cond->yc += cond->dy * cond->scale;
+            if (keyPressed->code == sf::Keyboard::Key::Right)
+                cond->xc += cond->dx * cond->scale;
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-            cond->yc -= cond->dy * cond->scale;
+            if (keyPressed->code == sf::Keyboard::Key::Left)
+                cond->xc -= cond->dx * cond->scale;
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z)
-            cond->scale /= cond->ds;
+            if (keyPressed->code == sf::Keyboard::Key::Down)
+                cond->yc += cond->dy * cond->scale;
 
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::A)
-            cond->scale *= cond->ds;
+            if (keyPressed->code == sf::Keyboard::Key::Up)
+                cond->yc -= cond->dy * cond->scale;
+
+            if (keyPressed->code == sf::Keyboard::Key::Z)
+                cond->scale /= cond->ds;
+
+            if (keyPressed->code == sf::Keyboard::Key::A)
+                cond->scale *= cond->ds;
+        }
 
         fprintf (stderr, "xc = %.5f yc = %.5f scale = %.5f\n", cond->xc, cond->yc, cond->scale);
 
 // ============================ FPS ============================= //
-        //float currentTime = clock.restart().asSeconds(); // REVIEW
+        // float currentTime = clock.restart().asSeconds();
 
         float currentTime = clock.getElapsedTime().asSeconds();
 
@@ -123,7 +134,8 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
         snprintf (resultFps, sizeof (resultFps), "FPS: %.1f", averageFps);
 
-        fpsText.setString (resultFps);
+        if (fpsText.has_value ())
+            fpsText->setString (resultFps);
 
         if (restartClock.getElapsedTime().asSeconds() >= 1.0f)
         {
@@ -135,8 +147,11 @@ int GraphicsPart (struct Params_t* cond, int* version)
 
         window.clear();
         window.draw (sprite);
-        window.draw (fpsField);
-        window.draw (fpsText);
+        if (fpsText.has_value ())
+        {
+            window.draw (fpsField);
+            window.draw (*fpsText);
+        }
         window.display();
     }
 
@@ -164,11 +179,11 @@ void SetPixels (sf::Image* image, unsigned int ix, unsigned int iy, int* N)
             int r = (int) (255*2.5 * t) + 7;
             int g = (int) (255*2.5 * t) + 7;
             int b = 0;
-            color.r = (sf::Uint8) (r > 255 ? 255 : r);
-            color.g = (sf::Uint8) (g > 255 ? 255 : g);
-            color.b = (sf::Uint8) b;
+            color.r = static_cast<std::uint8_t> (r > 255 ? 255 : r);
+            color.g = static_cast<std::uint8_t> (g > 255 ? 255 : g);
+            color.b = static_cast<std::uint8_t> (b);
         }
 
-        image->setPixel (ix + i, iy, color);
+        image->setPixel ({ix + i, iy}, color);
     }
 }
