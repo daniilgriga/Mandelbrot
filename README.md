@@ -8,7 +8,7 @@
 
 ## General information
 
-Lab work on programming in the the [ded32](https://github.com/ded32) course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
+Lab work on programming on the the [ded32](https://github.com/ded32) course on optimization of calculation. As an algorithm of calculation I use the Mandelbrot set.
 I have to measure the time spent on calculation and try to reduce it with my optimizations.
 
 To debug the algorithm I draw the Mandelbrot set with SFML.
@@ -16,6 +16,11 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
 
 ## Table of Contents
 
+- [Quick start](#quick-start)
+    - [Dependencies](#dependencies)
+    - [Build](#build)
+    - [Run](#run)
+    - [Resources](#resources)
 - [Program](#program)
     - [Algorithm](#algorithm)
     - [Modes](#modes)
@@ -25,6 +30,51 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
     - [My hardware](#hardware)
     - [Performance measurement](#productivity)
 - [Results](#results)
+
+## Quick start
+
+### Dependencies
+
+- Linux
+- `clang++` and `g++`
+- `make`
+- SFML 3 (`graphics`, `window`, `system`, `audio`)
+- C++17
+-
+### Build
+
+```bash
+make
+```
+
+### Run
+
+Timing mode:
+
+```bash
+./build/test --v1 --run=300
+./build/test --v2 --run=300
+./build/test --v3 --run=300
+```
+
+Graphics mode:
+
+```bash
+./build/test --v1 -g
+./build/test --v2 -g
+./build/test --v3 -g
+```
+
+Short control map in graphics mode:
+- `Esc` --- close window
+- `Left/Right/Up/Down` --- move ROI
+- `Z` --- zoom in
+- `A` --- zoom out
+
+### Resources
+
+The FPS overlay uses `assets/fonts/DejaVuSans-Bold.ttf`.
+If this file is not available, the fractal still renders, but FPS text is disabled.
 
 ## Program
 
@@ -50,6 +100,10 @@ My const values:
 - N = `256`
 
 There are three implementations of this:
+
+> [!NOTE]
+> Code snippets below show the core idea of each version.
+> Source of truth is actual code in `src/`.
 
 **1.** Simple - *pixel-by-pixel calculation*
 
@@ -269,7 +323,7 @@ double RunMandelbrot_v3 (sf::Image* image, struct Params_t* cond, bool GraphicsF
 ### Modes
 
 - **Image output**. Used to verify the algorithm and calculate the FPS
-- **Timing**. Used to measure the running time of n iterations of the Mandelbrot algorithm
+- **Timing**. Used to measure the running time of n iterations of the Mandelbrot algorithm and append result to `data.md`
 
 ### Graphics
 
@@ -281,6 +335,8 @@ The color is compiled by this algorithm for each of the rgb colors:
 | ```color.r = (r > 255 ? 255 : r);```  | ```color.g = (g > 255 ? 255 : g);``` | ```color.b = b``` |
 
 In this way, the black areas from which the point failed to escape will be visible
+
+In current implementation, graphics mode is independent from timing mode, so rendering does not require special benchmark flags.
 
 ## Optimization
 
@@ -310,6 +366,17 @@ I used the following compilation parameters:
 - `g++`, with `-O2`
 - `clang++`, with `-O3`
 - `clang++`, with `-O2`
+
+Benchmark helper script:
+
+```bash
+bash launch.sh
+```
+
+Important notes for interpretation:
+- aggressive optimization can remove Mandelbrot work if there is no observable side effect, so timing setup must preserve one for each tested version
+- `launch.sh` edits `makefile` during run and appends lines to `data.md`
+- if script is interrupted, verify `makefile` parameters before next run
 
 
 
