@@ -124,11 +124,8 @@ int main (int argc, char* argv[])
             }
 
             default:
-                fprintf (stderr, "Version dont choosed - usage: [--v<number> -r<number> | --v<number> --run=<number>]");
+                fprintf (stderr, "Version dont choosed - usage: [--v<number> -r<number> | --v<number> --run=<number>]\n");
         }
-
-        for (int i = 0; i < iterations; i++)
-            fullTime += RunMandelbrot_v2 (nullptr, &startParams, false);
 
         fprintf (stderr, "Mandelbrot algorithm <%d> times took: <%g> seconds!\n", iterations, fullTime);
         fprintf (data, "| %g |\n", fullTime);
