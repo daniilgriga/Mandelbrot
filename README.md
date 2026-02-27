@@ -35,12 +35,11 @@ To debug the algorithm I draw the Mandelbrot set with SFML.
 
 ### Dependencies
 
-- Linux
 - `clang++` and `g++`
 - `make`
 - SFML 3 (`graphics`, `window`, `system`, `audio`)
 - C++17
--
+
 ### Build
 
 ```bash
